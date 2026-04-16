@@ -3,7 +3,7 @@ import java.util.Arrays;
 public class Anagram {
     public static boolean isAnagram(String s1, String s2) {
         if (s1 == null || s2 == null) {
-            throw new NullPointerException("Strings must not be null");
+            throw new NullPointerException("Strings must not be nulll");
         }
         s1 = s1.toLowerCase().replaceAll("\\s+", "");
         s2 = s2.toLowerCase().replaceAll("\\s+", "");
