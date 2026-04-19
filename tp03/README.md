@@ -79,3 +79,29 @@ mvn test
 
 - **JUnit 5** (`junit-jupiter:5.10.0`) – framework de test
 - **Mockito** (`mockito-core:5.5.0`) – création de mocks
+
+---
+
+# TP03 – Tests d'intégration – Partie 2
+
+## Exercice 2: Tests d'intégration avec Testcontainers Java
+
+**1. Analyse des tests existants:**
+* **Tests d'intégration existants:** Le projet original `task-manager` contient principalement des tests unitaires (`TaskControllerTest`, `TaskServiceImplTest`) qui utilisent l'approche basée sur des objets simulés avec Mockito (`@Mock`, `@InjectMocks`). Il n'y a qu'un seul test d'intégration `TaskManagerApplicationTests.java` qui charge le contexte Spring Boot complet (`@SpringBootTest`), mais qui utilise une base de données en mémoire (H2) définie dans le `pom.xml`.
+* **Approches utilisées:** Isolation logique avec Mockito pour les contrôleurs et les services; Environnement en mémoire (H2) pour tester le chargement de contexte de Spring.
+* **Limitations des tests existants:** 
+  - La base de données en mémoire (H2) ne simule pas fidèlement l'environnement de production (les syntaxes SQL spécifiques de MySQL, la gestion des contraintes et les triggers sont différents).
+  - Ces tests peuvent produire des faux positifs (un test qui passe sur H2 mais échoue lors de l'exécution d'une vraie requête SQL sur la base de production).
+  - La fiabilité sur la validation des connexions réelles et des transactions de la base de données est limitée.
+
+**2. Analyse et Comparaison (Testcontainers vs Tests originaux):**
+* **Couverture:** Testcontainers permet une couverture nettement supérieure en incluant le comportement réel de la base de données MySQL.
+* **Fiabilité:** La fiabilité est grandement accrue grâce à la création d'environnements iso-production. S'il y a un défaut de dialecte MySQL ou d'ORM Hibernate, Testcontainers permettra de le détecter pendant les tests d'intégration.
+* **Lisibilité et Maintenabilité:** La configuration des tests devient plus robuste (`@ClassRule MySQLContainer`) et supprime le besoin de maintenir des scripts H2 et MySQL séparément.
+* **Avantages:** 
+  - Similitude parfaite entre l'environnement de test et de production.
+  - Le cycle de vie de la base de données de test est complétement géré depuis le code Java (démarrage/arrêt automatiques).
+  - Aucun besoin d'installer MySQL sur la machine hôte des développeurs ou sur le pipeline CI/CD, Testcontainers s'occupe de tout via Docker.
+* **Inconvénients:** 
+  - Le temps d'exécution des tests est plus lent (latence au démarrage des conteneurs isolés Docker).
+  - Testcontainers ajoute une dépendance lourde : il exige imperceptiblement que le démon Docker s'exécute correctement sur l'hôte, ce qui complique les configurations sur certaines machines (comme sous Windows sans WSL correctement configuré).

@@ -16,7 +16,7 @@ public class UserServiceTest {
         // Arrange – create a mock for UserRepository
         UserRepository mockRepo = mock(UserRepository.class);
         User expectedUser = new User(1L, "Ahmed");
-        when(mockRepo.findUserById(1L)).thenReturn(expectedUser);
+        when(mockRepo.findById(1L)).thenReturn(expectedUser);
 
         UserService service = new UserService(mockRepo);
 
@@ -29,6 +29,6 @@ public class UserServiceTest {
         assertEquals("Ahmed", result.getName());
 
         // Verify the mock was called with the right argument
-        verify(mockRepo).findUserById(1L);
+        verify(mockRepo).findById(1L);
     }
 }
